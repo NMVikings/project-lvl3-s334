@@ -6,7 +6,7 @@ program
   .arguments('<url>')
   .description(description)
   .version(version)
-  .option('-o, --output [type]', 'output dir', '.')
+  .option('-o, --output [dir]', 'output dir', '.')
   .action((url, { output }) => {
     loadPage(url, output);
   });

@@ -16,5 +16,8 @@ test-coverage:
 watch:
 	npx jest --watch
 
+link:
+	npm run build && npm link
+
 publish:
 	npm publish
