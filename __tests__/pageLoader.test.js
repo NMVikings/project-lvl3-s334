@@ -1,7 +1,7 @@
 import axios from 'axios';
 import httpAdapter from 'axios/lib/adapters/http';
 import nock from 'nock';
-import os from 'os';
+// import os from 'os';
 import path from 'path';
 import * as util from 'util';
 import tmp from 'tmp';
