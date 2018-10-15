@@ -1,0 +1,43 @@
+{
+  "name": "nmvikings_page-loader",
+  "version": "1.0.0",
+  "description": "Page loader",
+  "main": "index.js",
+  "scripts": {
+    "build": "NODE_ENV=production babel src --out-dir dist --source-maps inline",
+    "prepublishOnly": "rm -rf dist && npm run build"
+  },
+  "bin": {
+    "gendiff": "dist/bin/pageLoader.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NMVikings/project-lvl3-s334.git"
+  },
+  "keywords": [
+    "page",
+    "loader"
+  ],
+  "files": [
+    "dist"
+  ],
+  "author": "nmvikings",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NMVikings/project-lvl3-s334/issues"
+  },
+  "homepage": "https://github.com/NMVikings/project-lvl3-s334#readme",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-eslint": "^8.2.6",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-stage-0": "^6.24.1",
+    "eslint": "^5.4.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-babel": "^5.2.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jest": "^21.22.0",
+    "jest": "^23.6.0"
+  }
+}
