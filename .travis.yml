@@ -2,7 +2,7 @@
 
 env:
   global:
-    - TMPDIR=/tmp
+    - TMPDIR=/tmp/
     - CC_TEST_REPORTER_ID=e96fff13a18965acb8c4655a2ea0af3bca224356ac8b87974c4edea1bc2fb462
 
 language: node_js
