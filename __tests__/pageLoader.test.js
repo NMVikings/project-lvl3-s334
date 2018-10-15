@@ -3,6 +3,8 @@ import httpAdapter from 'axios/lib/adapters/http';
 import nock from 'nock';
 import os from 'os';
 import path from 'path';
+import * as util from 'util';
+import tmp from 'tmp';
 import { promises as fsPromises } from 'fs';
 
 import loadPage from '../src';
@@ -20,10 +22,9 @@ test('Download https://hexlet.io/courses', async () => {
     .get('/courses')
     .reply(200, testHtml);
 
-
-  return fsPromises.mkdtemp(os.tmpdir())
+  return util.promisify(tmp.dir)()
     .then(dirPath => loadPage('https://hexlet.io/courses', dirPath))
-    .then(filePath => fsPromises.readFile(filePath, 'utf8')).then((data) => {
+    .then(filePath => console.log(filePath) || fsPromises.readFile(filePath, 'utf8')).then((data) => {
       expect(data).toBe(testHtml);
     });
 });
