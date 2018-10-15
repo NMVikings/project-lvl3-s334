@@ -21,7 +21,7 @@ test('Download https://hexlet.io/courses', async () => {
     .reply(200, testHtml);
 
 
-  return fsPromises.mkdtemp(os.tmpdir())
+  return fsPromises.mkdtemp(os.tmpDir())
     .then(dirPath => loadPage('https://hexlet.io/courses', dirPath))
     .then(filePath => fsPromises.readFile(filePath, 'utf8')).then((data) => {
       expect(data).toBe(testHtml);
