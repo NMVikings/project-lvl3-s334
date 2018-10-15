@@ -8,7 +8,7 @@
     "prepublishOnly": "rm -rf dist && npm run build"
   },
   "bin": {
-    "gendiff": "dist/bin/pageLoader.js"
+    "page-loader": "dist/bin/pageLoader.js"
   },
   "repository": {
     "type": "git",
@@ -38,6 +38,11 @@
     "eslint-plugin-babel": "^5.2.0",
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-jest": "^21.22.0",
-    "jest": "^23.6.0"
+    "jest": "^23.6.0",
+    "nock": "^10.0.1"
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "commander": "^2.19.0"
   }
 }
