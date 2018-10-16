@@ -1,30 +1,24 @@
 import axios from 'axios';
 import httpAdapter from 'axios/lib/adapters/http';
 import nock from 'nock';
-// import os from 'os';
 import path from 'path';
-import * as util from 'util';
+import { promisify } from 'util';
 import tmp from 'tmp';
 import { promises as fsPromises } from 'fs';
 
 import loadPage from '../src';
 
-const host = 'https://hexlet.io';
-
-axios.defaults.host = host;
 axios.defaults.adapter = httpAdapter;
 
 test('Download https://hexlet.io/courses', async () => {
-  expect.assertions(1);
   const testHtml = await fsPromises.readFile(path.resolve(__dirname, '__fixtures__/test1.html'), 'utf-8');
 
-  nock(host)
+  nock('https://hexlet.io')
     .get('/courses')
     .reply(200, testHtml);
 
-  return util.promisify(tmp.dir)()
-    .then(dirPath => loadPage('https://hexlet.io/courses', dirPath))
-    .then(filePath => console.log(filePath) || fsPromises.readFile(filePath, 'utf8')).then((data) => {
-      expect(data).toBe(testHtml);
-    });
+  const dirPath = await promisify(tmp.dir)();
+  const filePath = await loadPage('https://hexlet.io/courses', dirPath);
+  const fileData = await fsPromises.readFile(filePath, 'utf8');
+  expect(fileData).toBe(testHtml);
 });

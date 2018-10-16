@@ -4,7 +4,7 @@ import { promises as fs } from 'fs';
 
 const loadPage = (src, dir) => {
   const { host, pathname } = new URL(src);
-  const fileName = `${host}${pathname}`.replace(/[^A-Za-z0-9]+/gm, '-');
+  const fileName = `${host}${pathname}`.split(/[^\w]{1,}/gm).filter(p => !!p).join('-');
   const fullFileName = `${fileName}.html`;
 
   const filePath = path.resolve(__dirname, path.join(dir, fullFileName));

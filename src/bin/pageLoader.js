@@ -8,7 +8,9 @@ program
   .version(version)
   .option('-o, --output [dir]', 'output dir', '.')
   .action((url, { output }) => {
-    loadPage(url, output);
+    loadPage(url, output).then((filePath) => {
+      console.log(filePath);
+    });
   });
 
 
