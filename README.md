@@ -4,14 +4,14 @@
 
 # Page loader
 
-###Install
+### Install
 ```
 git clone git@github.com:NMVikings/project-lvl3-s334.git
 cd project-lvl3-s334
 make link
 ```
 
-###Use 
+### Use 
 ```
 npm link
 page-loader <url> -o [dir]
