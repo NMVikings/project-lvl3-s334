@@ -14,7 +14,7 @@ test-coverage:
 	npx jest --coverage
 
 watch:
-	npx jest --watch
+	npx jest --watch --verbose false
 
 link:
 	npm run build && npm link
