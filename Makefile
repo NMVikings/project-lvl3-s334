@@ -8,13 +8,13 @@ lint:
 	npx eslint .
 
 test:
-	npx jest
+	DEBUG=page-loader npx jest
 
 test-coverage:
 	npx jest --coverage
 
 watch:
-	npx jest --watch --verbose false
+	DEBUG=page-loader npx jest --watch --verbose false
 
 link:
 	npm run build && npm link

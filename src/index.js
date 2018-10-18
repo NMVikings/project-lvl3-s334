@@ -1,8 +1,10 @@
 import axios from 'axios';
 import cheerio from 'cheerio';
-// import sanitizeHtml from 'sanitize-html';
+import debug from 'debug';
 import path from 'path';
-import { promises as fs, createWriteStream } from 'fs';
+import { promises as fs } from 'fs';
+
+// const log = debug('page-loader');
 
 const mapping = {
   img: 'src',
@@ -10,48 +12,14 @@ const mapping = {
   link: 'href',
 };
 
-const saveFile = (filePath, data) => fs.writeFile(filePath, data);
-const saveImage = (filePath, data) => data.pipe(createWriteStream(filePath));
-
-const filesInfo = {
-  '.css': {
-    write: saveFile,
-    responseType: 'file',
-  },
-  '.png': {
-    write: saveImage,
-    responseType: 'stream',
-  },
-  '.jpg': {
-    write: saveImage,
-    responseType: 'stream',
-  },
-  '.svg': {
-    write: saveImage,
-    responseType: 'stream',
-  },
-  '.gif': {
-    write: saveImage,
-    responseType: 'stream',
-  },
-  '.rss': {
-    write: saveFile,
-    responseType: 'file',
-  },
-  '.js': {
-    write: saveFile,
-    responseType: 'file',
-  },
-};
+const createName = str => str.split(/[^\w]{1,}/gm).filter(p => !!p).join('-');
 
 const loadPage = (src, dir) => {
   const { host, pathname } = new URL(src);
-  const fileName = `${host}${pathname}`.split(/[^\w]{1,}/gm).filter(p => !!p).join('-');
+  const fileName = createName(`${host}${pathname}`);
   const fullFileName = `${fileName}.html`;
   const assetsFolderName = `${fileName}_files`;
-
   const outputDir = path.resolve(__dirname, dir);
-
   const htmlPath = path.join(outputDir, fullFileName);
   const assetsPath = path.join(outputDir, assetsFolderName);
   const assetsInfo = {};
@@ -74,7 +42,7 @@ const loadPage = (src, dir) => {
             const { pathname: assetPathname } = new URL(url);
 
             const { name, ext, dir: assetPathDir } = path.parse(assetPathname);
-            const filename = path.join(assetPathDir, name).split(/[^\w]{1,}/gm).filter(p => !!p).join('-') + ext;
+            const filename = [createName(path.join(assetPathDir, name)), ext].join('');
             const pathToAsset = `./${path.join(assetsFolderName, filename)}`;
             el.attr(mapping[key], pathToAsset);
 
@@ -88,11 +56,9 @@ const loadPage = (src, dir) => {
     .then(() => fs.mkdir(assetsPath))
     .then(() => Promise.all(Object.keys(assetsInfo).map((url) => {
       const assetPath = assetsInfo[url];
-      const { ext } = path.parse(assetPath);
-      const { write, responseType } = filesInfo[ext];
 
-      return axios({ method: 'get', url, responseType })
-        .then(response => write(assetPath, response.data));
+      return axios.get(url, { responseType: 'arraybuffer' })
+        .then(response => fs.writeFile(assetPath, response.data));
     })))
     .then(() => ({ htmlPath, assetsPath }));
 };

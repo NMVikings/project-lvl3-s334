@@ -10,9 +10,12 @@ import loadPage from '../src';
 
 axios.defaults.adapter = httpAdapter;
 
+const getPathToFixture = fileName => path.resolve(__dirname, `__fixtures__/courses/${fileName}`);
+
 test('Html https://hexlet.io/courses', async () => {
-  const testHtml = await fsPromises.readFile(path.resolve(__dirname, '__fixtures__/hexlet_courses-mock.html'), 'utf-8');
-  const expectedHtml = await fsPromises.readFile(path.resolve(__dirname, '__fixtures__/expected.html'), 'utf-8');
+  const testHtml = await fsPromises.readFile(getPathToFixture('/data.html'), 'utf-8');
+  const expectedHtml = await fsPromises.readFile(getPathToFixture('expected.html'), 'utf-8');
+
   nock('https://hexlet.io')
     .get('/courses')
     .reply(200, testHtml);
@@ -22,6 +25,5 @@ test('Html https://hexlet.io/courses', async () => {
 
 
   const fileData = await fsPromises.readFile(htmlPath, 'utf8');
-
   expect(fileData).toBe(expectedHtml);
 });
