@@ -46,7 +46,7 @@ describe('my beverage', async () => {
     const expectedCss = await fsPromises.readFile(getPathToFixture('css.css'), 'utf-8');
 
     const fileData = await fsPromises.readFile(`${assetsPath}/css.css`, 'utf8');
-    expect(null).toBe(null);
+    expect(expectedCss).toBe(fileData);
   });
 
   test('Js', async () => {
