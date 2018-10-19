@@ -54,12 +54,10 @@ const loadPage = (src, dir) => {
     })
     .then(data => fs.writeFile(htmlPath, data))
     .then(() => fs.mkdir(assetsPath))
-    .then(() => Promise.all(Object.keys(assetsInfo).map((url) => {
-      const assetPath = assetsInfo[url];
-
-      return axios.get(url, { responseType: 'arraybuffer' })
-        .then(response => fs.writeFile(assetPath, response.data));
-    })))
+    .then(() => Promise.all(Object.keys(assetsInfo).map(url => axios.get(url, { responseType: 'arraybuffer' }))))
+    .then(responses => Promise.all(
+      responses.map(({ data, config }) => fs.writeFile(assetsInfo[config.url], data)),
+    ))
     .then(() => ({ htmlPath, assetsPath }));
 };
 
