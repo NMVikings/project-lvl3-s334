@@ -30,7 +30,7 @@ test('Html https://hexlet.io/courses', async () => {
 
   const fileData = await fsPromises.readFile(htmlPath, 'utf8');
   expect(fileData).toBe(expectedHtml);
-}, 10000);
+}, 20000);
 
 test('Assets', async () => {
   const testHtml = await fsPromises.readFile(getPathToFixture('mock-assets.html'), 'utf-8');

@@ -3,6 +3,7 @@ import axios from 'axios';
 import cheerio from 'cheerio';
 import debug from 'debug';
 import path from 'path';
+import Listr from 'listr';
 import { promises as fs } from 'fs';
 
 const log = debug('page-loader');
@@ -27,7 +28,11 @@ const getErrorMessage = (err) => {
     ENOTFOUND: e => `Invalid url: ${e.config.url}`,
   };
 
-  return fsErrors[err.code](err) || err;
+  if (!fsErrors[err.code]) {
+    return err;
+  }
+
+  return fsErrors[err.code](err);
 };
 
 const processHtml = (html, { host, assetsFolderName, outputDir }) => {
@@ -61,6 +66,16 @@ const processHtml = (html, { host, assetsFolderName, outputDir }) => {
 
   return { processedHtml: $.html({ decodeEntities: false }), assets };
 };
+
+const downloadAssets = assetsInfo => new Listr(
+  Object.keys(assetsInfo).map(
+    src => ({
+      title: src,
+      task: () => axios.get(src, { responseType: 'arraybuffer' }).then(({ data }) => fs.writeFile(assetsInfo[src], data)),
+    }),
+  ),
+).run();
+
 
 const loadPage = (src, dir) => {
   const { host, pathname } = url.parse(src);
@@ -96,12 +111,10 @@ const loadPage = (src, dir) => {
       log(`Create dir ${assetsPath} for assets`);
       return fs.mkdir(assetsPath);
     })
-    .then(() => Promise.all(Object.keys(assetsInfo).map(link => axios.get(link, { responseType: 'arraybuffer' }))))
-    .then((responses) => {
-      log(`Download ${responses.length} assets`);
-      return Promise.all(
-        responses.map(({ data, config }) => fs.writeFile(assetsInfo[config.url], data)),
-      );
+    .then(() => downloadAssets(assetsInfo))
+    .then(() => {
+      log(`Save ${Object.keys(assetsInfo).length} assets to ${assetsPath}`);
+      return { htmlPath, assetsPath };
     })
     .catch((e) => {
       const msg = e.response
@@ -109,10 +122,6 @@ const loadPage = (src, dir) => {
         : getErrorMessage(e);
 
       throw new Error(msg);
-    })
-    .then((files) => {
-      log(`Save ${files.length} assets to ${assetsPath}`);
-      return { htmlPath, assetsPath };
     });
 };
 
