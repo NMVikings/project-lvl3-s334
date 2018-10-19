@@ -1,14 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Errors EACCES 1`] = `"An attempt was made to access a file /Users/nmvikings/repo/hexlet/project-lvl3-s334/noacces/assets-io-courses.html in a way forbidden by its file access permissions."`;
-
 exports[`Errors ECONNREFUSED 1`] = `"No connection could be made because the . actively refused it."`;
-
-exports[`Errors EEXIST 1`] = `"An existing file /Users/nmvikings/repo/hexlet/project-lvl3-s334/exists/assets-io-courses_files was the target of an operation that required that the target not exist."`;
-
-exports[`Errors ENOENT 1`] = `"No entity (file or directory) could be found by the given path /Users/nmvikings/repo/hexlet/project-lvl3-s334/src/bla-bla/assets-io-courses.html"`;
-
-exports[`Errors ENOTDIR 1`] = `"A component of the given pathname /Users/nmvikings/repo/hexlet/project-lvl3-s334/noacces/assets-io-courses.html existed, but was not a directory as expected."`;
 
 exports[`Errors ENOTFOUND 1`] = `"Invalid url: https://invalid-url.com"`;
 

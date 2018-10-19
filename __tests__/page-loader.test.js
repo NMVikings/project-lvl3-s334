@@ -63,9 +63,10 @@ describe('Errors', () => {
       .reply(200, testHtml);
 
     const dirPath = path.resolve('noacces');
+    const htmlPath = path.join(dirPath, 'assets-io-courses.html');
     await fsPromises.mkdir(dirPath);
     await fsPromises.chmod(dirPath, 770);
-    await expect(loadPage('https://assets.io/courses', dirPath)).rejects.toThrowErrorMatchingSnapshot();
+    await expect(loadPage('https://assets.io/courses', dirPath)).rejects.toThrowError(`An attempt was made to access a file ${htmlPath} in a way forbidden by its file access permissions.`);
     await fsPromises.rmdir(dirPath);
   });
 
@@ -88,7 +89,7 @@ describe('Errors', () => {
     const htmlPath = path.join(dirPath, 'assets-io-courses.html');
     await fsPromises.mkdir(dirPath);
     await fsPromises.mkdir(assetsPath);
-    await expect(loadPage('https://assets.io/courses', dirPath)).rejects.toThrowErrorMatchingSnapshot();
+    await expect(loadPage('https://assets.io/courses', dirPath)).rejects.toThrowError(`An existing file ${assetsPath} was the target of an operation that required that the target not exist.`);
     await fsPromises.unlink(htmlPath);
     await fsPromises.rmdir(assetsPath);
     await fsPromises.rmdir(dirPath);
@@ -100,8 +101,9 @@ describe('Errors', () => {
       .get('/courses')
       .reply(200, testHtml);
 
-    const dirPath = 'bla-bla';
-    await expect(loadPage('https://assets.io/courses', dirPath)).rejects.toThrowErrorMatchingSnapshot();
+    const dirPath = path.resolve('bla-bla');
+    const htmlPath = path.join(dirPath, 'assets-io-courses.html');
+    await expect(loadPage('https://assets.io/courses', dirPath)).rejects.toThrowError(`No entity (file or directory) could be found by the given path ${htmlPath}`);
   });
 
   test('ENOTDIR', async () => {
@@ -110,10 +112,11 @@ describe('Errors', () => {
       .get('/courses')
       .reply(200, testHtml);
 
-    const filePath = path.resolve('noacces');
-    await fsPromises.writeFile(filePath);
-    await expect(loadPage('https://assets.io/courses', filePath)).rejects.toThrowErrorMatchingSnapshot();
-    await fsPromises.unlink(filePath);
+    const dirPath = path.resolve('fakeDir');
+    const htmlPath = path.join(dirPath, 'assets-io-courses.html');
+    await fsPromises.writeFile(dirPath);
+    await expect(loadPage('https://assets.io/courses', dirPath)).rejects.toThrowError(`A component of the given pathname ${htmlPath} existed, but was not a directory as expected.`);
+    await fsPromises.unlink(dirPath);
   });
 
   test('ENOTFOUND', async () => {
