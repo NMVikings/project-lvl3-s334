@@ -20,13 +20,17 @@ test('Html https://hexlet.io/courses', async () => {
     .get('/courses')
     .reply(200, testHtml);
 
+  nock('https://cdn.hexlet.io')
+    .get(() => true)
+    .reply(200, null);
+
   const dirPath = await promisify(tmp.dir)();
   const { htmlPath } = await loadPage('https://hexlet.io/courses', dirPath);
 
 
   const fileData = await fsPromises.readFile(htmlPath, 'utf8');
   expect(fileData).toBe(expectedHtml);
-});
+}, 10000);
 
 test('Assets', async () => {
   const testHtml = await fsPromises.readFile(getPathToFixture('mock-assets.html'), 'utf-8');
