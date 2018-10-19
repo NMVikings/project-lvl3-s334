@@ -4,7 +4,7 @@ import nock from 'nock';
 import path from 'path';
 import { promisify } from 'util';
 import tmp from 'tmp';
-import { promises as fsPromises, mkdir } from 'fs';
+import { promises as fsPromises } from 'fs';
 
 import loadPage from '../src';
 
