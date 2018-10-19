@@ -2,7 +2,7 @@ install:
 	npm install
 
 start:
-	npx babel-node -- src/bin/pageLoader.js
+	npx babel-node -- src/bin/pageLoader.js https://nmvikings.github.io
 
 lint:
 	npx eslint .
@@ -17,7 +17,7 @@ watch:
 	DEBUG=page-loader npx jest --watch --verbose false
 
 link:
-	npm run build && npm link
+	npm uninstall -g page-loader && npm run build && npm link
 
 publish:
 	npm publish

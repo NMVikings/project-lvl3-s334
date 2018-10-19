@@ -18,4 +18,4 @@ page-loader <url> -o [dir]
 ```
 
 ### Asciinema of instalation and using
-[![asciicast](https://asciinema.org/a/aJRfp5hWouJiMy0i19UsABAlV.png)](https://asciinema.org/a/aJRfp5hWouJiMy0i19UsABAlV)
+[![asciicast](https://asciinema.org/a/bWAXxUC8PKlBZe1tEbtwPek47.png)](https://asciinema.org/a/bWAXxUC8PKlBZe1tEbtwPek47)

@@ -8,8 +8,6 @@ import { promises as fs } from 'fs';
 
 const log = debug('page-loader');
 
-// const log = (namespace, message) => debug(`page-loader${namespace}`)(message);
-
 const mapping = {
   img: 'src',
   script: 'src',
@@ -48,7 +46,9 @@ const processHtml = (html, { host, assetsFolderName, outputDir }) => {
           return false;
         }
 
-        return url.parse(link).host.includes(host);
+        const { host: linkHost } = url.parse(link);
+
+        return linkHost && linkHost.includes(host);
       })
       .each((index, element) => {
         const el = $(element);

@@ -1,3 +1,5 @@
+#! /usr/bin/env node
+
 import program from 'commander';
 import { version, description } from '../../package.json';
 import loadPage from '..';
@@ -9,9 +11,8 @@ program
   .option('-o, --output [dir]', 'output dir', process.cwd())
   .action((url, { output }) => {
     loadPage(url, output)
-      .then((filePath) => {
-        console.info(filePath);
-        process.exit(0);
+      .then(({ htmlPath }) => {
+        console.info(htmlPath);
       })
       .catch((e) => {
         console.error(e);

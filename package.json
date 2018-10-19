@@ -1,6 +1,6 @@
 {
   "name": "nmvikings_page-loader",
-  "version": "1.0.2",
+  "version": "2.0.4",
   "description": "Page loader",
   "main": "index.js",
   "scripts": {
