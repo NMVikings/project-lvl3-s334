@@ -1,3 +1,4 @@
+import url from 'url';
 import axios from 'axios';
 import cheerio from 'cheerio';
 import debug from 'debug';
@@ -16,6 +17,19 @@ const mapping = {
 
 const createName = str => str.split(/[^\w]{1,}/gm).filter(p => !!p).join('-');
 
+const getErrorMessage = (err) => {
+  const fsErrors = {
+    EACCES: e => `An attempt was made to access a file ${e.path} in a way forbidden by its file access permissions.`,
+    ECONNREFUSED: e => `No connection could be made because the ${e.config.url} actively refused it.`,
+    EEXIST: e => `An existing file ${e.path} was the target of an operation that required that the target not exist.`,
+    ENOENT: e => `No entity (file or directory) could be found by the given path ${e.path}`,
+    ENOTDIR: e => `A component of the given pathname ${e.path} existed, but was not a directory as expected.`,
+    ENOTFOUND: e => `Invalid url: ${e.config.url}`,
+  };
+
+  return fsErrors[err.code](err) || err;
+};
+
 const processHtml = (html, { host, assetsFolderName, outputDir }) => {
   const $ = cheerio.load(html);
   const assets = {};
@@ -23,21 +37,25 @@ const processHtml = (html, { host, assetsFolderName, outputDir }) => {
   Object.keys(mapping).forEach((key) => {
     $(key)
       .filter((index, element) => {
-        const url = $(element).attr(mapping[key]);
+        const link = $(element).attr(mapping[key]);
 
-        return url && new URL(url).host.includes(host);
+        if (!link) {
+          return false;
+        }
+
+        return url.parse(link).host.includes(host);
       })
       .each((index, element) => {
         const el = $(element);
-        const url = el.attr(mapping[key]);
-        const { pathname: assetPathname } = new URL(url);
+        const link = el.attr(mapping[key]);
+        const { pathname: assetPathname } = url.parse(link);
 
         const { name, ext, dir: assetPathDir } = path.parse(assetPathname);
         const filename = [createName(path.join(assetPathDir, name)), ext].join('');
         const pathToAsset = `./${path.join(assetsFolderName, filename)}`;
         el.attr(mapping[key], pathToAsset);
 
-        assets[url] = path.resolve(outputDir, pathToAsset);
+        assets[link] = path.resolve(outputDir, pathToAsset);
       });
   });
 
@@ -45,7 +63,7 @@ const processHtml = (html, { host, assetsFolderName, outputDir }) => {
 };
 
 const loadPage = (src, dir) => {
-  const { host, pathname } = new URL(src);
+  const { host, pathname } = url.parse(src);
   const fileName = createName(`${host}${pathname}`);
   const assetsFolderName = `${fileName}_files`;
   const outputDir = path.resolve(__dirname, dir);
@@ -78,12 +96,19 @@ const loadPage = (src, dir) => {
       log(`Create dir ${assetsPath} for assets`);
       return fs.mkdir(assetsPath);
     })
-    .then(() => Promise.all(Object.keys(assetsInfo).map(url => axios.get(url, { responseType: 'arraybuffer' }))))
+    .then(() => Promise.all(Object.keys(assetsInfo).map(link => axios.get(link, { responseType: 'arraybuffer' }))))
     .then((responses) => {
       log(`Download ${responses.length} assets`);
       return Promise.all(
         responses.map(({ data, config }) => fs.writeFile(assetsInfo[config.url], data)),
       );
+    })
+    .catch((e) => {
+      const msg = e.response
+        ? `Failed to load page: ${src}. Server respond with status: ${e.response.status}`
+        : getErrorMessage(e);
+
+      throw new Error(msg);
     })
     .then((files) => {
       log(`Save ${files.length} assets to ${assetsPath}`);

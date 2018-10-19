@@ -45,3 +45,80 @@ test('Assets', async () => {
 
   expect(received).toBe(expected);
 });
+
+describe('Errors', () => {
+  test('HTTP error', async () => {
+    nock('https://assets.io')
+      .get('/courses')
+      .reply(405, null);
+
+    const dirPath = await promisify(tmp.dir)();
+    await expect(loadPage('https://assets.io/courses', dirPath)).rejects.toThrowErrorMatchingSnapshot();
+  });
+
+  test('EACCES', async () => {
+    const testHtml = await fsPromises.readFile(getPathToFixture('mock-assets.html'), 'utf-8');
+    nock('https://assets.io')
+      .get('/courses')
+      .reply(200, testHtml);
+
+    const dirPath = path.resolve('noacces');
+    await fsPromises.mkdir(dirPath);
+    await fsPromises.chmod(dirPath, 770);
+    await expect(loadPage('https://assets.io/courses', dirPath)).rejects.toThrowErrorMatchingSnapshot();
+    await fsPromises.rmdir(dirPath);
+  });
+
+  test('ECONNREFUSED', async () => {
+    nock.enableNetConnect();
+
+    const dirPath = await promisify(tmp.dir)();
+    await expect(loadPage('.', dirPath)).rejects.toThrowErrorMatchingSnapshot();
+  });
+
+  test('EEXIST', async () => {
+    const testHtml = await fsPromises.readFile(getPathToFixture('mock-assets.html'), 'utf-8');
+    nock('https://assets.io')
+      .get('/courses')
+      .reply(200, testHtml);
+
+
+    const dirPath = path.resolve('exists');
+    const assetsPath = path.join(dirPath, 'assets-io-courses_files');
+    const htmlPath = path.join(dirPath, 'assets-io-courses.html');
+    await fsPromises.mkdir(dirPath);
+    await fsPromises.mkdir(assetsPath);
+    await expect(loadPage('https://assets.io/courses', dirPath)).rejects.toThrowErrorMatchingSnapshot();
+    await fsPromises.unlink(htmlPath);
+    await fsPromises.rmdir(assetsPath);
+    await fsPromises.rmdir(dirPath);
+  });
+
+  test('ENOENT', async () => {
+    const testHtml = await fsPromises.readFile(getPathToFixture('mock-assets.html'), 'utf-8');
+    nock('https://assets.io')
+      .get('/courses')
+      .reply(200, testHtml);
+
+    const dirPath = 'bla-bla';
+    await expect(loadPage('https://assets.io/courses', dirPath)).rejects.toThrowErrorMatchingSnapshot();
+  });
+
+  test('ENOTDIR', async () => {
+    const testHtml = await fsPromises.readFile(getPathToFixture('mock-assets.html'), 'utf-8');
+    nock('https://assets.io')
+      .get('/courses')
+      .reply(200, testHtml);
+
+    const filePath = path.resolve('noacces');
+    await fsPromises.writeFile(filePath);
+    await expect(loadPage('https://assets.io/courses', filePath)).rejects.toThrowErrorMatchingSnapshot();
+    await fsPromises.unlink(filePath);
+  });
+
+  test('ENOTFOUND', async () => {
+    nock.enableNetConnect();
+
+    await expect(loadPage('https://invalid-url.com', path.resolve(''))).rejects.toThrowErrorMatchingSnapshot();
+  });
+});

@@ -8,7 +8,7 @@ lint:
 	npx eslint .
 
 test:
-	DEBUG=page-loader npx jest
+	DEBUG=page-loader npx jest -u
 
 test-coverage:
 	npx jest --coverage

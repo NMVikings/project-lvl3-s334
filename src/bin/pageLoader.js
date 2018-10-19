@@ -8,9 +8,15 @@ program
   .version(version)
   .option('-o, --output [dir]', 'output dir', process.cwd())
   .action((url, { output }) => {
-    loadPage(url, output).then((filePath) => {
-      console.log(filePath);
-    });
+    loadPage(url, output)
+      .then((filePath) => {
+        console.info(filePath);
+        process.exit(0);
+      })
+      .catch((e) => {
+        console.error(e);
+        process.exit(1);
+      });
   });
 
 
