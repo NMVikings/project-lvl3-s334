@@ -19,3 +19,6 @@ page-loader <url> -o [dir]
 
 ### Asciinema of instalation and using
 [![asciicast](https://asciinema.org/a/bWAXxUC8PKlBZe1tEbtwPek47.png)](https://asciinema.org/a/bWAXxUC8PKlBZe1tEbtwPek47)
+
+### Concurrent assets downloading
+[![asciicast](https://asciinema.org/a/x32Ud7b60OYQFaL3DeAoTEnKy.png)](https://asciinema.org/a/x32Ud7b60OYQFaL3DeAoTEnKy)
