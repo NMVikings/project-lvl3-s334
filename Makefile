@@ -2,7 +2,7 @@ install:
 	npm install
 
 start:
-	npx babel-node -- src/bin/pageLoader.js https://nmvikings.github.io
+	npx babel-node -- src/bin/pageLoader.js
 
 lint:
 	npx eslint .

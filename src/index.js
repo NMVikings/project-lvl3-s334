@@ -74,6 +74,7 @@ const downloadAssets = assetsInfo => new Listr(
       task: () => axios.get(src, { responseType: 'arraybuffer' }).then(({ data }) => fs.writeFile(assetsInfo[src], data)),
     }),
   ),
+  { concurrent: true },
 ).run();
 
 
